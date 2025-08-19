@@ -20,7 +20,6 @@ spack compiler add
 echo "-----------------------------------------"
 echo "Installing python and openmpi using spack"
 echo "-----------------------------------------"
-
 spack install -j40 python
 spack load python
 spack install -j40 openmpi@4.1.1
@@ -31,7 +30,7 @@ echo "---------------------------------------"
 echo "Installing dependencies for WRF and WPS"
 echo "---------------------------------------"
 cd /scratch/$USER
-cat > install.sh << 'EOF'
+cat > wrf-dep-install.sh << 'EOF'
 #!/usr/bin/sh
 # GNU Compilation of WRF dependencies
 DIR=$PWD/wrf_dependencies
@@ -129,7 +128,11 @@ cd ..
 # After this in a new shell you should redo the environment settings found at the top of this script
 EOF
 
-source install.sh
+source wrf-dep-install.sh 
 
+echo "--------------"
+echo "Installing WPS"
+echo "--------------"
+spack install -j40 wps
 
 
