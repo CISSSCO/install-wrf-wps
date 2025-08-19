@@ -1,36 +1,3 @@
-echo "----------------"
-echo "Setting up spack"
-echo "----------------"
-cd /scratch/$USER
-git clone https://github.com/spack/spack.git
-cd spack
-source share/spack/setup-env.sh
-git clone https://github.com/spack/spack-packages.git
-spack repo set --destination "$(pwd)/spack-packages" builtin
-spack info gcc
-
-
-echo "-----------------"
-echo "Installing gcc@13"
-echo "-----------------"
-spack install -j40 gcc@13.4.0 languages=c,c++,fortran
-spack load gcc@13.4.0
-spack compiler add
-
-echo "-----------------------------------------"
-echo "Installing python and openmpi using spack"
-echo "-----------------------------------------"
-spack install -j40 python
-spack load python
-spack install -j40 openmpi@4.1.1
-spack load openmpi@4.1.1
-
-
-echo "---------------------------------------"
-echo "Installing dependencies for WRF and WPS"
-echo "---------------------------------------"
-cd /scratch/$USER
-cat > wrf-dep-install.sh << 'EOF'
 #!/usr/bin/sh
 # GNU Compilation of WRF dependencies
 DIR=$PWD/wrf_dependencies
@@ -126,13 +93,3 @@ cd ..
 #rm -rf jasper* ._jasper-1.900.1
 
 # After this in a new shell you should redo the environment settings found at the top of this script
-EOF
-
-source wrf-dep-install.sh 
-
-echo "--------------"
-echo "Installing WPS"
-echo "--------------"
-spack install -j40 wps
-
-

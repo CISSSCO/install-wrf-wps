@@ -1,4 +1,4 @@
-#+title: README
+#+title: Installation Guide
 
 * Setting up spack
 - Below src block can be used to install and setup spack package manager.
@@ -26,7 +26,7 @@ spack info gcc
 echo "-----------------"
 echo "Installing gcc@13"
 echo "-----------------"
-spack install -j40 gcc@13.4.0 language=c,c++,fortran
+spack install -j40 gcc@13.4.0 languages=c,c++,fortran
 spack load gcc@13.4.0
 spack compiler add
 
@@ -165,5 +165,9 @@ echo "--------------"
 echo "Installing WPS"
 echo "--------------"
 spack install -j40 wps
+cd $(spack find -p wps | awk -F " " '{ print $NF  }' | grep wps)
+ls
 
 #+end_src
+
+

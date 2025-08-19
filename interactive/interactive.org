@@ -1,0 +1,7 @@
+#+title: Interactive
+
+* Introduction
+This folder will contain the interactive program for installing WRF and WPS.
+#+begin_src bash :tangle main.sh
+
+#+end_src
