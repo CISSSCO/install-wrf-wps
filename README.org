@@ -1,5 +1,11 @@
 #+title: Installation Guide
 
+* Introduction
+- You can follow below source blocks one by one.
+- You can also use *install.sh* file and execute this using bash ~bash install.sh~. It will automatically install and setup everything giving you the installation path at the end.
+- In the script I assumed the installation will be done in */scratch/$USER* folder. You can change these in the script to the location where you want to install spack and dependencies.
+- Make sure you don't have *spack* in the location where you're installing it, otherwise it might not work as expected.
+
 * Setting up spack
 - Below src block can be used to install and setup spack package manager.
 - If already installed you can skip this block.

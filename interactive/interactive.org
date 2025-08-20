@@ -2,6 +2,120 @@
 
 * Introduction
 This folder will contain the interactive program for installing WRF and WPS.
-#+begin_src bash :tangle main.sh
+
+* Functions
+
+** Help
+#+begin_src bash :tangle main.sh :session s1
+#!/bin/bash
+Help() {
+    echo
+
+}
+#+end_src
+** Menu1
+#+begin_src bash :tangle main.sh :session s1 :results output
+Menu1() {
+    echo "
+    +-----------------------------+
+    +      WRF-WPS Installer      +
+    +-----------------------------+
+    +                             +
+    +        1. Automatic         +
+    +        2. Custom            +
+    +                             +
+    +-----------------------------+
+    "
+}
+#+end_src
+
+#+RESULTS:
+: +-----------------------------+
+:     +      WRF-WPS Installer      +
+:     +-----------------------------+
+:     +                             +
+:     +        1. Automatic         +
+:     +        2. Custom            +
+:     +                             +
+:     +-----------------------------+
+
+** Info Automatic
+#+begin_src bash :tangle main.sh :session s1 :results output
+InfoAutomatic() {
+    echo "
+    +------------------------------+
+    +    Automatic Installation    +
+    +------------------------------+
+    +                              +
+    + This will install the softw- +
+    + -are in current location.    +
+    + Make sure it's empty.        +
+    +                              +
+    +------------------------------+
+    "
+}
 
 #+end_src
+** Menu2
+#+begin_src bash :tangle main.sh :session s1 :results output
+Menu2() {
+    echo "
+    +---------------------------------------+
+    +           Custom Installation         +
+    +---------------------------------------+
+    +                                       +
+    + 1. Setup spack                        +
+    + 2. Installing gcc                     +
+    + 3. Installing packages using spack    +
+    + 4. WRF deps install                   +
+    + 5. Choose WRF                         +
+    + 6. Install WPS                        +
+    + 7. Clear screen                       +
+    + 8. Remove current installations       +
+    + 9. Exit                               +
+    +                                       +
+    +---------------------------------------+
+    "
+}
+Menu2
+#+end_src
+
+#+RESULTS:
+#+begin_example
++---------------------------------------+
+    +           Custom Installation         +
+    +---------------------------------------+
+    +                                       +
+    + 1. Setup spack                        +
+    + 2. Installing gcc                     +
+    + 3. Installing packages using spack    +
+    + 4. WRF deps install                   +
+    + 5. Choose WRF                         +
+    + 6. Install WPS                        +
+    + 7. Clear screen                       +
+    + 8. Remove current installations       +
+    + 9. Exit                               +
+    +                                       +
+    +---------------------------------------+
+#+end_example
+
+* Main
+#+begin_src bash :tangle main.sh :session s1 :results output
+
+Main() {
+    Menu1
+}
+
+Main
+
+#+end_src
+
+#+RESULTS:
+: +-----------------------------+
+:     +      WRF-WPS Installer      +
+:     +-----------------------------+
+:     +                             +
+:     +        1. Automatic         +
+:     +        2. Custom            +
+:     +                             +
+:     +-----------------------------+

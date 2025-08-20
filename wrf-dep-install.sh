@@ -1,4 +1,8 @@
 #!/usr/bin/sh
+
+# Credit for this script goes to the gist below
+# https://gist.github.com/islas/b76171591531d3a06e209cd1ff75840c
+
 # GNU Compilation of WRF dependencies
 DIR=$PWD/wrf_dependencies
 
