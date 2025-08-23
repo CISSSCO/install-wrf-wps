@@ -29,16 +29,6 @@ Menu1() {
 }
 #+end_src
 
-#+RESULTS:
-: +-----------------------------+
-:     +      WRF-WPS Installer      +
-:     +-----------------------------+
-:     +                             +
-:     +        1. Automatic         +
-:     +        2. Custom            +
-:     +                             +
-:     +-----------------------------+
-
 ** Info Automatic
 #+begin_src bash :tangle main.sh :session s1 :results output
 InfoAutomatic() {
@@ -80,25 +70,6 @@ Menu2() {
 Menu2
 #+end_src
 
-#+RESULTS:
-#+begin_example
-+---------------------------------------+
-    +           Custom Installation         +
-    +---------------------------------------+
-    +                                       +
-    + 1. Setup spack                        +
-    + 2. Installing gcc                     +
-    + 3. Installing packages using spack    +
-    + 4. WRF deps install                   +
-    + 5. Choose WRF                         +
-    + 6. Install WPS                        +
-    + 7. Clear screen                       +
-    + 8. Remove current installations       +
-    + 9. Exit                               +
-    +                                       +
-    +---------------------------------------+
-#+end_example
-
 * Main
 #+begin_src bash :tangle main.sh :session s1 :results output
 
@@ -110,12 +81,96 @@ Main
 
 #+end_src
 
+* Setup spack
+** Choose version
+#+begin_src bash :tangle setupSpack.sh
+#!/bin/bash
+ChooseSpackVersion() {
+    echo "
+    +---------------------------------------+
+    +          Choose spack version         +
+    +---------------------------------------+
+    +                                       +
+    + 1. releases/v0.23                     +
+    + 2. develop(latest)                    +
+    + 3. Backup current installations       +
+    + 4. Clear                              +
+    + 5. Exit                               +
+    +                                       +
+    +---------------------------------------+
+    "
+}
+#+end_src
+
 #+RESULTS:
-: +-----------------------------+
-:     +      WRF-WPS Installer      +
-:     +-----------------------------+
-:     +                             +
-:     +        1. Automatic         +
-:     +        2. Custom            +
-:     +                             +
-:     +-----------------------------+
+
+** Setting up releases/v0.23
+#+begin_src bash :tangle setupSpack.sh
+
+SetupSpack0_23() {
+    git clone https://github.com/spack/spack.git
+    cd spack
+    git checkout releases/v0.23
+    source share/spack/setup-env.sh
+    spack info gcc
+}
+
+#+end_src
+
+#+RESULTS:
+
+** Setting up develop
+#+begin_src bash :tangle setupSpack.sh
+
+SetupSpackDevelop() {
+    git clone https://github.com/spack/spack.git
+    cd spack
+    source share/spack/setup-env.sh
+    git clone https://github.com/spack/spack-packages.git
+    spack repo set --destination "$(pwd)/spack-packages" builtin
+    spack info gcc
+}
+
+#+end_src
+
+#+RESULTS:
+
+** Backup Current Installation
+#+begin_src bash :tangle setupSpack.sh
+
+currentDate=$(date +%d%b%Y)
+currentTime=$(date +%H:%M)
+
+BackupSpack() {
+    if [ -d spack ]; then
+        mv spack spack.bak_"$currentDate"_"$currentTime"
+    else
+        echo "No spack found in current directory"
+    fi
+}
+
+#+end_src
+
+#+RESULTS:
+
+** setupSpack
+#+begin_src bash :tangle setupSpack.sh
+ChooseSpackVersion
+read -p "Enter your choice : " opt
+if [ $opt == 1 ]; then
+    SetupSpack0_23
+elif [ $opt == 2 ]; then
+    SetupSpackDevelop
+elif [ $opt == 3 ]; then
+    BackupSpack
+elif [ $opt == 4 ]; then
+    clear
+elif [ $opt == 5 ]; then
+    exit
+else
+    echo "Invalid option!!!"
+fi
+
+#+end_src
+
+#+RESULTS:
