@@ -17,20 +17,6 @@ Menu1() {
     "
 }
 
-InfoAutomatic() {
-    echo "
-    +------------------------------+
-    +    Automatic Installation    +
-    +------------------------------+
-    +                              +
-    + This will install the softw- +
-    + -are in current location.    +
-    + Make sure it's empty.        +
-    +                              +
-    +------------------------------+
-    "
-}
-
 Menu2() {
     echo "
     +---------------------------------------+
@@ -50,10 +36,100 @@ Menu2() {
     +---------------------------------------+
     "
 }
-Menu2
+
+InfoAutomatic() {
+    echo "
+    +---------------------------------------+
+    +         Automatic Installation        +
+    +---------------------------------------+
+    +                                       +
+    + This will install the software in     +
+    + current location.                     +
+    + Make sure it's empty.                 +
+    +                                       +
+    +---------------------------------------+
+    "
+}
+
+InstallingGCC() {
+    spack install -j40 gcc@13.4.0 languages=c,c++,fortran
+    spack load gcc@13.4.0
+    spack compiler add
+}
+
+InstallingPackagesSpack() {
+    spack install -j40 python
+    spack load python
+    spack install -j40 openmpi@4.1.1
+    spack load openmpi@4.1.1
+}
+
+InstallingWrfDeps() {
+    source wrf-dep-install.sh
+}
+
+ChooseWRF() {
+    echo "1. wrf@4.5.1"
+    echo "2. latest"
+    read -p "Choose wrf: " $opt
+    version=" "
+    if [ $opt == 1 ]; then
+        version=4.5.1
+    elif [ $opt == 2 ]; then
+        version=4.6.1
+    else
+        echo "Invalid option!!!"
+    fi
+}
+
+InstallingWPS() {
+    if [ $version == 4.5.1 ]; then
+        spack install -j40 wps ^wrf@4.5.1
+    else
+        spack install -j40 wps
+    fi
+}
 
 Main() {
     Menu1
+    if [ $opt == 1 ]; then
+        if [ -z ./ ]; then
+            bash ../install.sh
+        else
+            InfoAutomatic
+        fi
+
+    else
+        while [ 1 -eq 1 ]
+        do
+            Menu2
+            read -p "Enter your option" opt
+            if [ $opt == 1 ]; then
+                echo "Setting up spack..."
+                source setupSpack.sh
+                echo "Spack setup complete!!!"
+            elif [ $opt == 2 ]; then
+                InstallingGCC
+            elif [ $opt == 3 ]; then
+                InstallingPackagesSpack
+            elif [ $opt == 4 ]; then
+                InstallingWrfDeps
+            elif [ $opt == 5 ]; then
+                ChooseWRF
+            elif [ $opt == 6 ]; then
+                InstallingWPS
+            elif [ $opt == 7 ]; then
+                Clear
+            elif [ $opt == 8 ]; then
+                echo "TODO Add commands for removing"
+            elif [ $opt == 9 ]; then
+                break
+            else
+                echo "Invalid Option!!!"
+            fi
+        done
+    fi
+
 }
 
 Main
