@@ -85,6 +85,9 @@ Main
 ** Choose version
 #+begin_src bash :tangle setupSpack.sh
 #!/bin/bash
+
+submitDir="$(pwd)"
+
 ChooseSpackVersion() {
     echo "
     +---------------------------------------+
@@ -108,11 +111,18 @@ ChooseSpackVersion() {
 #+begin_src bash :tangle setupSpack.sh
 
 SetupSpack0_23() {
-    git clone https://github.com/spack/spack.git
-    cd spack
-    git checkout releases/v0.23
-    source share/spack/setup-env.sh
-    spack info gcc
+    if [ -e spack ]; then
+        echo "Spack already found in current folder (Use backup)..."
+    else
+        git clone https://github.com/spack/spack.git
+        cd spack
+        echo "Changed to folder $(pwd)"
+        git checkout releases/v0.23
+        source share/spack/setup-env.sh
+        cd $submitDir
+        echo "Changed to folder $(pwd)"
+        spack info gcc
+    fi
 }
 
 #+end_src
@@ -123,12 +133,19 @@ SetupSpack0_23() {
 #+begin_src bash :tangle setupSpack.sh
 
 SetupSpackDevelop() {
-    git clone https://github.com/spack/spack.git
-    cd spack
-    source share/spack/setup-env.sh
-    git clone https://github.com/spack/spack-packages.git
-    spack repo set --destination "$(pwd)/spack-packages" builtin
-    spack info gcc
+    if [ -e spack ]; then
+        echo "Spack already found in current folder (Use backup)..."
+    else
+        git clone https://github.com/spack/spack.git
+        cd spack
+        echo "Changed to folder $(pwd)"
+        source share/spack/setup-env.sh
+        git clone https://github.com/spack/spack-packages.git
+        spack repo set --destination "$(pwd)/spack-packages" builtin
+        cd $submitDir
+        echo "Changed to folder $(pwd)"
+        spack info gcc
+    fi
 }
 
 #+end_src
@@ -142,10 +159,43 @@ currentDate=$(date +%d%b%Y)
 currentTime=$(date +%H:%M)
 
 BackupSpack() {
-    if [ -d spack ]; then
-        mv spack spack.bak_"$currentDate"_"$currentTime"
+    echo "This will rename your spack present in current folder and also your spack configuration folder ~/.spack "
+    if [ -e spack ]; then
+        echo "spack folder found in your current directory..."
+        read -p "Do you want to continue? [n] " option
+        if [ "$option" == "y" ]; then
+            mv spack spack.bak_"$currentDate"_"$currentTime"
+            echo "Backup of spack completed!!!"
+            if [ -e ~/.spack ]; then
+                echo "Spack configuration folder found in ~/.spack "
+                read -p "Do you want to backup? [n] " option
+                if [ "$option" == "y" ]; then
+                    mv ~/.spack ~/.spack.bak_"$currentDate"_"$currentTime"
+                    echo "Backup of configuration completed!!!"
+                else
+                    echo "Chose not to backup spack configuration..."
+                fi
+            else
+                echo "No configuration found in ~/.spack..."
+            fi
+        else
+            echo "Chose not to backup spack..."
+        fi
     else
-        echo "No spack found in current directory"
+        echo "No spack found in current directory..."
+        if [ -e ~/.spack ]; then
+            echo "Spack configuration folder found in ~/.spack "
+            read -p "Do you want to backup? [n] " option
+            if [ "$option" == "y" ]; then
+                mv ~/.spack ~/.spack.bak_"$currentDate"_"$currentTime"
+                echo "Backup of configuration completed!!!"
+            else
+                echo "Chose not to backup spack configuration..."
+            fi
+        else
+            echo "No configuration found in ~/.spack..."
+        fi
+
     fi
 }
 
@@ -155,21 +205,24 @@ BackupSpack() {
 
 ** setupSpack
 #+begin_src bash :tangle setupSpack.sh
-ChooseSpackVersion
-read -p "Enter your choice : " opt
-if [ $opt == 1 ]; then
-    SetupSpack0_23
-elif [ $opt == 2 ]; then
-    SetupSpackDevelop
-elif [ $opt == 3 ]; then
-    BackupSpack
-elif [ $opt == 4 ]; then
-    clear
-elif [ $opt == 5 ]; then
-    exit
-else
-    echo "Invalid option!!!"
-fi
+while [ 1 -eq 1 ]
+do
+    ChooseSpackVersion
+    read -p "Enter your choice : " opt
+    if [ $opt == 1 ]; then
+        SetupSpack0_23
+    elif [ $opt == 2 ]; then
+        SetupSpackDevelop
+    elif [ $opt == 3 ]; then
+        BackupSpack
+    elif [ $opt == 4 ]; then
+        clear
+    elif [ $opt == 5 ]; then
+        break
+    else
+        echo "Invalid option!!!"
+    fi
+done
 
 #+end_src
 
