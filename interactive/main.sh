@@ -44,10 +44,11 @@ InfoAutomatic() {
     +---------------------------------------+
     +                                       +
     + This will install the software in     +
-    + current location.                     +
+    + default location.                     +
     + Make sure it's empty.                 +
     +                                       +
     +---------------------------------------+
+    Default location: /scratch/$USER
     "
 }
 
@@ -92,9 +93,12 @@ InstallingWPS() {
 
 Main() {
     Menu1
-    if [ $opt == 1 ]; then
-        if [ -z ./ ]; then
-            bash ../install.sh
+    read -p "Enter your choice [1]: " opt
+    if [ -z "$opt" ] || [ $opt == 1 ]; then
+        echo "Default choice: Automatic Installation!!!"
+        read -p "Enter the full path where you want to install the packages: " path
+        if [ -z "$(ls -A $path)" ]; then
+            bash ../install.sh $path
         else
             InfoAutomatic
         fi
@@ -128,7 +132,7 @@ Main() {
                 echo "Invalid Option!!!"
             fi
         done
-    fi
+      fi
 
 }
 

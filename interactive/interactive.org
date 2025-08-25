@@ -4,6 +4,7 @@
 This folder will contain the interactive program for installing WRF and WPS.
 
 * Functions
+Here you can find the definitions of the functions used in the interactive program.
 ** Help
 #+begin_src bash :tangle main.sh :session s1
 #!/bin/bash
@@ -60,10 +61,11 @@ InfoAutomatic() {
     +---------------------------------------+
     +                                       +
     + This will install the software in     +
-    + current location.                     +
+    + default location.                     +
     + Make sure it's empty.                 +
     +                                       +
     +---------------------------------------+
+    Default location: /scratch/$USER
     "
 }
 
@@ -122,13 +124,17 @@ InstallingWPS() {
 }
 #+end_src
 * Main
+This will contain the main function.
 #+begin_src bash :tangle main.sh :session s1 :results output
 
 Main() {
     Menu1
-    if [ $opt == 1 ]; then
-        if [ -z ./ ]; then
-            bash ../install.sh
+    read -p "Enter your choice [1]: " opt
+    if [ -z "$opt" ] || [ $opt == 1 ]; then
+        echo "Default choice: Automatic Installation!!!"
+        read -p "Enter the full path where you want to install the packages: " path
+        if [ -z "$(ls -A $path)" ]; then
+            bash ../install.sh $path
         else
             InfoAutomatic
         fi
@@ -171,6 +177,7 @@ Main
 #+end_src
 
 * Setup spack
+This will create a program setupSpack.sh which can be used to perform ~spack~ related tasks (install/backup).
 ** Choose version
 #+begin_src bash :tangle setupSpack.sh
 #!/bin/bash
@@ -316,6 +323,7 @@ done
 #+end_src
 
 * WRF Dependencies installation script
+This contains the script given in [[https://forum.mmm.ucar.edu/threads/full-wrf-and-wps-installation-example-gnu.12385/][https://forum.mmm.ucar.edu/threads/full-wrf-and-wps-installation-example-gnu.12385]]. It is used for installing dependencies required for WRF.
 #+begin_src bash :tangle wrf-dep-install.sh
 #!/usr/bin/sh
 # GNU Compilation of WRF dependencies

@@ -1,7 +1,19 @@
+if [ $# == 0 ]; then
+    path="/scratch/$USER"
+    if [ -e "$path" ]; then
+        echo "Default location selected for installation : $path"
+    else
+        echo "Location doesn't exist..."
+    fi
+else
+    path="$1"
+fi
+
 echo "----------------"
 echo "Setting up spack"
 echo "----------------"
-cd /scratch/$USER
+cd $path
+echo "Changing into folder: $path"
 git clone https://github.com/spack/spack.git
 cd spack
 source share/spack/setup-env.sh
@@ -29,7 +41,8 @@ spack load openmpi@4.1.1
 echo "---------------------------------------"
 echo "Installing dependencies for WRF and WPS"
 echo "---------------------------------------"
-cd /scratch/$USER
+cd $path
+echo "Changing into folder : $path"
 cat > wrf-dep-install.sh << 'EOF'
 #!/usr/bin/sh
 # GNU Compilation of WRF dependencies
