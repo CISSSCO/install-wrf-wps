@@ -1,6 +1,12 @@
 #!/bin/bash
 
-submitDir="$(pwd)"
+submitDir=" "
+if [ $# == 0 ]; then
+    echo "Current folder location selected for spack installation..."
+    submitDir="$(pwd)"
+else
+    submitDir=$1
+fi
 
 ChooseSpackVersion() {
     echo "
@@ -19,6 +25,8 @@ ChooseSpackVersion() {
 }
 
 SetupSpack0_23() {
+    cd $submitDir
+    echo "Changed to folder $(pwd)"
     if [ -e spack ]; then
         echo "Spack already found in current folder (Use backup)..."
     else
@@ -27,6 +35,7 @@ SetupSpack0_23() {
         echo "Changed to folder $(pwd)"
         git checkout releases/v0.23
         source share/spack/setup-env.sh
+        echo "source $(pwd)/share/spack/setup-env.sh" >> loadEnv.sh
         cd $submitDir
         echo "Changed to folder $(pwd)"
         spack info gcc
@@ -34,6 +43,8 @@ SetupSpack0_23() {
 }
 
 SetupSpackDevelop() {
+    cd $submitDir
+    echo "Changed to folder $(pwd)"
     if [ -e spack ]; then
         echo "Spack already found in current folder (Use backup)..."
     else
@@ -41,6 +52,7 @@ SetupSpackDevelop() {
         cd spack
         echo "Changed to folder $(pwd)"
         source share/spack/setup-env.sh
+        echo "source $(pwd)/share/spack/setup-env.sh" >> loadEnv.sh
         git clone https://github.com/spack/spack-packages.git
         spack repo set --destination "$(pwd)/spack-packages" builtin
         cd $submitDir

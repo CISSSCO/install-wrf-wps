@@ -4,9 +4,16 @@ if [ $# == 0 ]; then
         echo "Default location selected for installation : $path"
     else
         echo "Location doesn't exist..."
+        exit
     fi
 else
     path="$1"
+    if [ -e "$path" ]; then
+        echo "Location selected for installation : $path"
+    else
+        echo "Location doesn't exist..."
+        exit
+    fi
 fi
 
 echo "----------------"

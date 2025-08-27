@@ -1,4 +1,6 @@
 #!/bin/bash
+echo "#!/bin/bash" > loadEnv.sh
+
 Help() {
     echo
 
@@ -53,20 +55,33 @@ InfoAutomatic() {
 }
 
 InstallingGCC() {
+    if [ -e loadEnv.sh ]; then
+        source $main/loadEnv.sh
+    else
+        echo "No environment file found..."
+    fi
     spack install -j40 gcc@13.4.0 languages=c,c++,fortran
     spack load gcc@13.4.0
     spack compiler add
+    echo "spack load gcc@13.4.0" > loadEnv.sh
 }
 
 InstallingPackagesSpack() {
+    if [ -e loadEnv.sh ]; then
+        source $main/loadEnv.sh
+    else
+        echo "No environment file found..."
+    fi
     spack install -j40 python
     spack load python
+    echo "spack load python" > loadEnv.sh
     spack install -j40 openmpi@4.1.1
     spack load openmpi@4.1.1
+    echo "spack load openmpi@4.1.1" > loadEnv.sh
 }
 
 InstallingWrfDeps() {
-    source wrf-dep-install.sh
+    source $main/wrf-dep-install.sh
 }
 
 ChooseWRF() {
@@ -84,12 +99,19 @@ ChooseWRF() {
 }
 
 InstallingWPS() {
+    if [ -e loadEnv.sh ]; then
+        source $main/loadEnv.sh
+    else
+        echo "No environment file found..."
+    fi
     if [ $version == 4.5.1 ]; then
         spack install -j40 wps ^wrf@4.5.1
     else
         spack install -j40 wps
     fi
 }
+
+main="$(pwd)"
 
 Main() {
     Menu1
@@ -104,13 +126,23 @@ Main() {
         fi
 
     else
+
+        read -p "Enter the full path where you want to install everything: " path
+        if [ -z "$path" ]; then
+            echo "PATH should not be empty..."
+            exit
+        else
+            echo "Installation path : $path"
+        fi
         while [ 1 -eq 1 ]
         do
             Menu2
-            read -p "Enter your option" opt
-            if [ $opt == 1 ]; then
+            read -p "Enter your option: " opt
+            if [ -z $opt ]; then
+                echo "You didn't enter anything..."
+            elif [ $opt == 1 ]; then
                 echo "Setting up spack..."
-                source setupSpack.sh
+                source setupSpack.sh $path
                 echo "Spack setup complete!!!"
             elif [ $opt == 2 ]; then
                 InstallingGCC
@@ -123,7 +155,7 @@ Main() {
             elif [ $opt == 6 ]; then
                 InstallingWPS
             elif [ $opt == 7 ]; then
-                Clear
+                clear
             elif [ $opt == 8 ]; then
                 echo "TODO Add commands for removing"
             elif [ $opt == 9 ]; then
@@ -132,7 +164,7 @@ Main() {
                 echo "Invalid Option!!!"
             fi
         done
-      fi
+    fi
 
 }
 

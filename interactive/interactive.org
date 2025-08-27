@@ -8,6 +8,8 @@ Here you can find the definitions of the functions used in the interactive progr
 ** Help
 #+begin_src bash :tangle main.sh :session s1
 #!/bin/bash
+echo "#!/bin/bash" > loadEnv.sh
+
 Help() {
     echo
 
@@ -73,26 +75,39 @@ InfoAutomatic() {
 ** Installing gcc
 #+begin_src bash :tangle main.sh :session s1 :results output
 InstallingGCC() {
+    if [ -e loadEnv.sh ]; then
+        source $main/loadEnv.sh
+    else
+        echo "No environment file found..."
+    fi
     spack install -j40 gcc@13.4.0 languages=c,c++,fortran
     spack load gcc@13.4.0
     spack compiler add
+    echo "spack load gcc@13.4.0" > loadEnv.sh
 }
 
 #+end_src
 ** Installing packages using spack
 #+begin_src bash :tangle main.sh :session s1 :results output
 InstallingPackagesSpack() {
+    if [ -e loadEnv.sh ]; then
+        source $main/loadEnv.sh
+    else
+        echo "No environment file found..."
+    fi
     spack install -j40 python
     spack load python
+    echo "spack load python" > loadEnv.sh
     spack install -j40 openmpi@4.1.1
     spack load openmpi@4.1.1
+    echo "spack load openmpi@4.1.1" > loadEnv.sh
 }
 
 #+end_src
 ** WRF dependencies installations
 #+begin_src bash :tangle main.sh :session s1 :results output
 InstallingWrfDeps() {
-    source wrf-dep-install.sh
+    source $main/wrf-dep-install.sh
 }
 
 #+end_src
@@ -116,6 +131,11 @@ ChooseWRF() {
 ** Installing WPS
 #+begin_src bash :tangle main.sh :session s1 :results output
 InstallingWPS() {
+    if [ -e loadEnv.sh ]; then
+        source $main/loadEnv.sh
+    else
+        echo "No environment file found..."
+    fi
     if [ $version == 4.5.1 ]; then
         spack install -j40 wps ^wrf@4.5.1
     else
@@ -126,6 +146,7 @@ InstallingWPS() {
 * Main
 This will contain the main function.
 #+begin_src bash :tangle main.sh :session s1 :results output
+main="$(pwd)"
 
 Main() {
     Menu1
@@ -140,13 +161,23 @@ Main() {
         fi
 
     else
+
+        read -p "Enter the full path where you want to install everything: " path
+        if [ -z "$path" ]; then
+            echo "PATH should not be empty..."
+            exit
+        else
+            echo "Installation path : $path"
+        fi
         while [ 1 -eq 1 ]
         do
             Menu2
-            read -p "Enter your option" opt
-            if [ $opt == 1 ]; then
+            read -p "Enter your option: " opt
+            if [ -z $opt ]; then
+                echo "You didn't enter anything..."
+            elif [ $opt == 1 ]; then
                 echo "Setting up spack..."
-                source setupSpack.sh
+                source setupSpack.sh $path
                 echo "Spack setup complete!!!"
             elif [ $opt == 2 ]; then
                 InstallingGCC
@@ -159,7 +190,7 @@ Main() {
             elif [ $opt == 6 ]; then
                 InstallingWPS
             elif [ $opt == 7 ]; then
-                Clear
+                clear
             elif [ $opt == 8 ]; then
                 echo "TODO Add commands for removing"
             elif [ $opt == 9 ]; then
@@ -168,7 +199,7 @@ Main() {
                 echo "Invalid Option!!!"
             fi
         done
-      fi
+    fi
 
 }
 
@@ -182,7 +213,13 @@ This will create a program setupSpack.sh which can be used to perform ~spack~ re
 #+begin_src bash :tangle setupSpack.sh
 #!/bin/bash
 
-submitDir="$(pwd)"
+submitDir=" "
+if [ $# == 0 ]; then
+    echo "Current folder location selected for spack installation..."
+    submitDir="$(pwd)"
+else
+    submitDir=$1
+fi
 
 ChooseSpackVersion() {
     echo "
@@ -207,6 +244,8 @@ ChooseSpackVersion() {
 #+begin_src bash :tangle setupSpack.sh
 
 SetupSpack0_23() {
+    cd $submitDir
+    echo "Changed to folder $(pwd)"
     if [ -e spack ]; then
         echo "Spack already found in current folder (Use backup)..."
     else
@@ -215,6 +254,7 @@ SetupSpack0_23() {
         echo "Changed to folder $(pwd)"
         git checkout releases/v0.23
         source share/spack/setup-env.sh
+        echo "source $(pwd)/share/spack/setup-env.sh" >> loadEnv.sh
         cd $submitDir
         echo "Changed to folder $(pwd)"
         spack info gcc
@@ -229,6 +269,8 @@ SetupSpack0_23() {
 #+begin_src bash :tangle setupSpack.sh
 
 SetupSpackDevelop() {
+    cd $submitDir
+    echo "Changed to folder $(pwd)"
     if [ -e spack ]; then
         echo "Spack already found in current folder (Use backup)..."
     else
@@ -236,6 +278,7 @@ SetupSpackDevelop() {
         cd spack
         echo "Changed to folder $(pwd)"
         source share/spack/setup-env.sh
+        echo "source $(pwd)/share/spack/setup-env.sh" >> loadEnv.sh
         git clone https://github.com/spack/spack-packages.git
         spack repo set --destination "$(pwd)/spack-packages" builtin
         cd $submitDir
@@ -249,6 +292,7 @@ SetupSpackDevelop() {
 #+RESULTS:
 
 ** Backup Current Installation
+Used for backup of spack.
 #+begin_src bash :tangle setupSpack.sh
 
 currentDate=$(date +%d%b%Y)
